@@ -1,27 +1,22 @@
-import requests
-import json
 import conf
+from weather_api_client import WeatherApiClient 
+from flask import Flask
+from flask import request
+from flask import render_template
+app = Flask(__name__)
 
-class Weather_api_client():
-    api_key = ''
-    lat = ''
-    lon = ''
-    url = ''
-    weather_data = {}
-    def __init__(self, api_key, lat, lon, url):
-        self.api_key = api_key
-        self.lat = lat
-        self.lon = lon
-        self.url = url % (lat, lon, api_key)
-        self.get_weather()
+@app.route('/')
+def index():
+    return render_template('form.html')
 
-    def get_weather(self):
-        response = requests.get(self.url)
-        self.weather_data = json.loads(response.text)
+@app.route('/main')
+def main():
+    config = conf.con
+    query = request.args.get('City')
+    print(query)
+    new_weather = WeatherApiClient(config['url'], query)
+    data_response = new_weather.get_weather()
+    return render_template('index.html', text=data_response, temp=data_response['current']['temperature'])
 
-
-
-config = conf.con
-new_weather = Weather_api_client(config['api_key'], config['lat'], config['lon'], config['url'])
-data_response = new_weather.get_weather()
-print(data)
+if __name__ == '__main__':
+    app.run()
