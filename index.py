@@ -16,7 +16,10 @@ def main():
     print(query)
     new_weather = WeatherApiClient(config['url'], query)
     data_response = new_weather.get_weather()
-    return render_template('index.html', text=data_response, temp=data_response['current']['temperature'])
+    return render_template('index.html', text=data_response)
 
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
 if __name__ == '__main__':
     app.run()
