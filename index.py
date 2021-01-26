@@ -1,25 +1,33 @@
-import conf
-from weather_api_client import WeatherApiClient 
+from weather_api_client import WeatherApiClient
 from flask import Flask
 from flask import request
 from flask import render_template
+from flask import redirect
 app = Flask(__name__)
-
 @app.route('/')
 def index():
     return render_template('form.html')
 
+
 @app.route('/main')
 def main():
-    config = conf.con
-    query = request.args.get('City')
-    print(query)
-    new_weather = WeatherApiClient(config['url'], query)
+    city = request.args.get('city')
+    new_weather = WeatherApiClient(city)
     data_response = new_weather.get_weather()
-    return render_template('index.html', text=data_response)
+    wind_info = new_weather.get_wind()
+    return render_template('index.html', text=data_response, wind=wind_info, city=city)
 
-@app.route('/profile')
-def profile():
-    return render_template('profile.html')
+
+@app.route('/wind-info')
+def wind():
+    city = request.args.get('city')
+    if city:
+        new_weather = WeatherApiClient(city)
+        wind_info = new_weather.get_wind()
+        return render_template('wind-info.html', wind=wind_info)
+    else:
+        return redirect("/", code=302)
+
+
 if __name__ == '__main__':
     app.run()

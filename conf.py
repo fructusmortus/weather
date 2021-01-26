@@ -2,7 +2,7 @@
 
 con = {
     "api_key" : "ca6a19006afff952f0e5246316b1ff94",
-    "url" : "http://api.weatherstack.com/current?access_key=ca6a19006afff952f0e5246316b1ff94&query="
+    "url" : "http://api.weatherstack.com/"
 }
 
 # con = {

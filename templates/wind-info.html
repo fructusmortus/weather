@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+<P>Current wind speed {{wind['wind_speed']}}</P>
+<P>Current wind degree {{wind['wind_degree']}}</P>
+<P>Current wind direction {{wind['wind_dir']}}</P>
+{% endblock %}
+{% block footer %}
+{{ super() }}
+This is footer wind block
+
+{% endblock %}
