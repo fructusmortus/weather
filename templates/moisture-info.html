@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+<P>Current precipitation {{moisture['precip']}}</P>
+<P>Current humidity {{moisture['humidity']}}</P>
+<P>Current cloudcover {{moisture['cloudcover']}}</P>
+{% endblock %}
+{% block footer %}
+{{ super() }}
+This is footer wind block
+
+{% endblock %}

@@ -14,8 +14,7 @@ def main():
     city = request.args.get('city')
     new_weather = WeatherApiClient(city)
     data_response = new_weather.get_weather()
-    wind_info = new_weather.get_wind()
-    return render_template('index.html', text=data_response, wind=wind_info, city=city)
+    return render_template('index.html', text=data_response, city=city)
 
 
 @app.route('/wind-info')
@@ -25,6 +24,17 @@ def wind():
         new_weather = WeatherApiClient(city)
         wind_info = new_weather.get_wind()
         return render_template('wind-info.html', wind=wind_info)
+    else:
+        return redirect("/", code=302)
+
+
+@app.route('/moisture-info')
+def moisture():
+    city = request.args.get('city')
+    if city:
+        new_weather = WeatherApiClient(city)
+        moisture_info = new_weather.get_moisture()
+        return render_template('moisture-info.html', moisture=moisture_info)
     else:
         return redirect("/", code=302)
 
