@@ -1,4 +1,5 @@
 from weather_api_client import WeatherApiClient
+from open_weather_api_client import OpenWeatherApiClient
 from flask import Flask
 from flask import request
 from flask import render_template
@@ -23,6 +24,7 @@ def wind():
     if city:
         new_weather = WeatherApiClient(city)
         wind_info = new_weather.get_wind()
+        print(wind_info)
         return render_template('wind-info.html', wind=wind_info)
     else:
         return redirect("/", code=302)
