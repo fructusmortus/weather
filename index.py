@@ -13,9 +13,23 @@ def index():
 @app.route('/main')
 def main():
     city = request.args.get('city')
-    new_weather = WeatherApiClient(city)
-    data_response = new_weather.get_weather()
-    return render_template('index.html', text=data_response, city=city)
+    if city:
+        try:
+            print('Catch')
+            new_weather = WeatherApiClient(city)
+            wind_info = new_weather.get_wind()
+            moisture_info = new_weather.get_moisture()
+            main_weather_params = new_weather.get_main_weather_params()
+            return render_template('index.html', wind=wind_info, moisture=moisture_info,
+                                   main_weather_params=main_weather_params, city=city)
+        except SystemError as error:
+            print(error)
+            new_weather = OpenWeatherApiClient(city)
+            weather_descr = new_weather.get_weather()
+            wind_info = new_weather.get_wind()
+            main_info = new_weather.get_main()
+            return render_template('index.html', weather_descr=weather_descr, wind_info=wind_info, main_info=main_info,
+                                   city=city)
 
 
 @app.route('/wind-info')

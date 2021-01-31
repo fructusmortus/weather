@@ -15,30 +15,23 @@ class OpenWeatherApiClient:
         print(self.weather_data)
 
     def get_weather(self):
-        return self.weather_data
+        weather_descr = {
+            "weather_descr": self.weather_data['list'][0]['weather'][0]['description']
+        }
+        return weather_descr
 
-    # def get_wind(self):
-    #     wind_info = {
-    #         "wind_speed": self.weather_data['current']['wind_speed'],
-    #         "wind_degree": self.weather_data['current']['wind_degree'],
-    #         "wind_dir": self.weather_data['current']['wind_dir'],
-    #     }
-    #     return wind_info
-    #
-    # def get_moisture(self):
-    #     moisture_info = {
-    #         "precip": self.weather_data['current']['precip'],
-    #         "humidity": self.weather_data['current']['humidity'],
-    #         "cloudcover": self.weather_data['current']['cloudcover'],
-    #     }
-    #     return moisture_info
-    #
-    # def get_main_weather_params(self):
-    #     other_info = {
-    #         "temperature": self.weather_data['current']['temperature'],
-    #         "feelslike": self.weather_data['current']['feelslike'],
-    #         "weather_descriptions": self.weather_data['current']['weather_descriptions'][0],
-    #         "uv_index": self.weather_data['current']['uv_index'],
-    #         "visibility": self.weather_data['current']['visibility'],
-    #     }
-    #     return other_info
+    def get_wind(self):
+        wind_info = {
+            "wind_speed": self.weather_data['list'][0]['wind']['speed'],
+            "wind_degree": self.weather_data['list'][0]['wind']['deg']
+        }
+        return wind_info
+
+    def get_main(self):
+        main_info = {
+            "temp": self.weather_data['list'][0]['main']['temp'],
+            "feels_like": self.weather_data['list'][0]['main']['feels_like'],
+            "pressure": self.weather_data['list'][0]['main']['pressure'],
+            "humidity": self.weather_data['list'][0]['main']['humidity']
+        }
+        return main_info

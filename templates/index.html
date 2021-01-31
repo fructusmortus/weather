@@ -2,21 +2,41 @@
 {% block content %}
 
 <div class="wrapper">
-    <P>Current temperature {{text['current']['temperature']}}</P>
-    <P>Current time {{text['current']['observation_time']}}</P>
-    <P>Weather description {{text['current']['weather_descriptions'][0]}}</P>
-    <P>Current wind speed {{text['current']['wind_speed']}}</P>
-    <P>Current wind degree {{text['current']['wind_degree']}}</P>
-    <P>Current wind direction {{text['current']['wind_dir']}}</P>
-    <P>Current pressure {{text['current']['pressure']}}</P>
-    <P>Current precip {{text['current']['precip']}}</P>
-    <P>Current humidity {{text['current']['humidity']}}</P>
-    <P>Current cloudcover {{text['current']['cloudcover']}}</P>
-    <P>Current feelslike {{text['current']['feelslike']}}</P>
-    <P>Current UV index {{text['current']['uv_index']}}</P>
-    <P>Current visibility {{text['current']['visibility']}}</P>
-    <P>Is day {{text['current']['is_day']}}</P>
-    <img src="{{text['current']['weather_icons'][0]}}" alt="Problem with loading image">
+    {% if moisture %}
+        <P>Current precipitation: {{moisture['precip']}}</P>
+        <P>Current humidity: {{moisture['humidity']}}</P>
+        <P>Current cloud cover: {{moisture['cloudcover']}}</P>
+    {% endif %}
+
+    {% if wind %}
+        <P>Current wind speed: {{wind['wind_speed']}}</P>
+        <P>Current wind degree: {{wind['wind_degree']}}</P>
+        <P>Current wind direction: {{wind['wind_dir']}}</P>
+    {% endif %}
+
+    {% if main_weather_params %}
+        <P>Current temperature: {{main_weather_params['temperature']}}</P>
+        <P>Feels like: {{main_weather_params['feelslike']}}</P>
+        <P>Weather description: {{main_weather_params['weather_descriptions']}}</P>
+        <P>Current UV index: {{main_weather_params['uv_index']}}</P>
+        <P>Current visibility: {{main_weather_params['visibility']}}</P>
+    {% endif %}
+
+    {% if weather_descr %}
+    <P>Weather description: {{weather_descr['weather_descr']}}</P>
+    {% endif %}
+
+    {% if wind_info %}
+    <P>Wind speed: {{wind_info['wind_speed']}}</P>
+    <P>Wind degree: {{wind_info['wind_degree']}}</P>
+    {% endif %}
+
+    {% if main_info %}
+    <P>Temperature: {{main_info['temp']}}</P>
+    <P>Feels like: {{main_info['feels_like']}}</P>
+    <P>Pressure: {{main_info['pressure']}}</P>
+    <P>Humidity: {{main_info['humidity']}}</P>
+    {% endif %}
 
     <a class="btn btn-primary" href="/">Return to the main page</a>
     <a class="btn btn-primary" href="/profile">Go to the profile page</a>

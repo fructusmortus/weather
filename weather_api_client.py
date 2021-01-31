@@ -12,10 +12,6 @@ class WeatherApiClient:
         # self.weather_data = requests.get(config['url'] + "current?access_key=" + config['api_key'] + "&query=" + city)
         response = requests.get(f"{config['url']}current?access_key={config['api_key']}&query={city}")
         self.weather_data = json.loads(response.text)
-        print(self.weather_data)
-
-    def get_weather(self):
-        return self.weather_data
 
     def get_wind(self):
         wind_info = {
