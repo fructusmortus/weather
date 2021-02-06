@@ -18,24 +18,18 @@ def index():
 def main():
     city = request.args.get('city')
     if city:
-        try:
-            print('Catch')
-            new_weather = WeatherApiClient(city)
-            status = new_weather.get_data()
-            if status:
-                wind_info = new_weather.get_wind()
-                moisture_info = new_weather.get_moisture()
-                main_weather_params = new_weather.get_main_weather_params()
-                return render_template('index.html',
-                                       wind=wind_info,
-                                       moisture=moisture_info,
-                                       main_weather_params=main_weather_params,
-                                       city=city)
-            else:
-                return render_template('error.html', city=city)
-
-        except Exception as err:
-            print("Common exception:", err)
+        new_weather = WeatherApiClient(city)
+        status = new_weather.get_data()
+        if status:
+            wind_info = new_weather.get_wind()
+            moisture_info = new_weather.get_moisture()
+            main_weather_params = new_weather.get_main_weather_params()
+            return render_template('index.html',
+                                   wind=wind_info,
+                                   moisture=moisture_info,
+                                   main_weather_params=main_weather_params,
+                                   city=city)
+        else:
             # new_weather = OpenWeatherApiClient(city)
             new_weather = WeatherbitApiClient(city)
             status = new_weather.get_data()

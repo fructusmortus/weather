@@ -2,7 +2,7 @@
 
 con = {
     "api_key": "ca6a19006afff952f0e5246316b1ff94",
-    "url": "http://api.weatherstack.comm/"
+    "url": "http://api.weatherstack.com/"
 }
 
 # con_ow_data = {

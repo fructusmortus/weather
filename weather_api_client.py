@@ -1,31 +1,23 @@
 import requests
-import json
 import conf
-from urllib.error import HTTPError
-from urllib3.exceptions import NewConnectionError
 
 
 class WeatherApiClient:
-
-    weather_data = {}
 
     def __init__(self, city):
         self.config = conf.con
         self.city = conf.con
         # self.weather_data = requests.get(config['url'] + "current?access_key=" + config['api_key'] + "&query=" + city)
+        self.weather_data = {}
 
     def get_data(self):
-        try:
-            response = requests.get(f"{self.config['url']}current?access_key={self.config['api_key']}&query={self.city}")
-            self.weather_data = json.loads(response.text)
+        response = requests.get(f"{self.config['url']}current?access_key={self.config['api_key']}&query={self.city}")
+        if not response.json()['request']:
+            return False
+        else:
+            self.weather_data = response.json()
             print(self.weather_data)
             return True
-        except HTTPError as err:
-            print("HTTP error weather_api_client", err)
-            return False
-        except NewConnectionError as nce:
-            print("No connection tp weather_api_client", nce)
-            return False
 
     def get_wind(self):
         wind_info = {
