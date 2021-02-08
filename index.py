@@ -5,30 +5,27 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import redirect
+from flask_restful import Resource, Api
 
 app = Flask(__name__)
 
-
-@app.route('/')
-def index():
-    return render_template('form.html')
+api = Api(app)
 
 
-@app.route('/main')
-def main():
-    city = request.args.get('city')
-    if city:
+class Main(Resource):
+    def get(self):
+        city = "Bishkek"
         new_weather = WeatherApiClient(city)
         status = new_weather.get_data()
         if status:
             wind_info = new_weather.get_wind()
             moisture_info = new_weather.get_moisture()
             main_weather_params = new_weather.get_main_weather_params()
-            return render_template('index.html',
-                                   wind=wind_info,
-                                   moisture=moisture_info,
-                                   main_weather_params=main_weather_params,
-                                   city=city)
+            return {"weather_report": {
+                "wind_info": wind_info,
+                "moisture_info": moisture_info,
+                "main_weather_params": main_weather_params
+            }}
         else:
             # new_weather = OpenWeatherApiClient(city)
             new_weather = WeatherbitApiClient(city)
@@ -38,37 +35,16 @@ def main():
                 weather_descr = new_weather.get_weather()
                 wind_info = new_weather.get_wind()
                 main_info = new_weather.get_main()
-                return render_template('index.html',
-                                       weather_descr=weather_descr,
-                                       wind_info=wind_info,
-                                       main_info=main_info,
-                                       city=city)
-            else:
-                return render_template('error.html', city=city)
+                return {"weather_report": {
+                    "weather_descr": weather_descr,
+                    "wind_info": wind_info,
+                    "main_info": main_info
+                }
+                }
 
 
-@app.route('/wind-info')
-def wind():
-    city = request.args.get('city')
-    if city:
-        new_weather = WeatherApiClient(city)
-        wind_info = new_weather.get_wind()
-        print(wind_info)
-        return render_template('wind-info.html', wind=wind_info)
-    else:
-        return redirect("/", code=302)
-
-
-@app.route('/moisture-info')
-def moisture():
-    city = request.args.get('city')
-    if city:
-        new_weather = WeatherApiClient(city)
-        moisture_info = new_weather.get_moisture()
-        return render_template('moisture-info.html', moisture=moisture_info)
-    else:
-        return redirect("/", code=302)
+api.add_resource(Main, '/')
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

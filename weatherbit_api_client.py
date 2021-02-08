@@ -12,7 +12,7 @@ class WeatherbitApiClient:
 
     def get_data(self):
         response = requests.get(f"{self.config['url']}?city={self.city}&key={self.config['api_key']}")
-        if not response.json()['data']:
+        if 'data' not in response.json():
             return False
         else:
             self.weather_data = response.json()

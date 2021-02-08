@@ -1,0 +1,12 @@
+{
+  "city":  "Bishkek",
+  "hot_news": [
+    {"title": "test_title1", "body": "test_body1"},
+    {"title": "test_title2", "body": "test_body2"},
+    {"title": "test_title3", "body": "test_body3"}
+  ],
+  "weather_report": {
+    "current_degree": "celcius",
+    "current_description": "description"
+  }
+}
