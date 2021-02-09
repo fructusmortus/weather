@@ -14,7 +14,8 @@ api = Api(app)
 
 class Main(Resource):
     def get(self):
-        city = "Bishkek"
+        city = query()
+        print(query())
         new_weather = WeatherApiClient(city)
         status = new_weather.get_data()
         if status:
@@ -44,6 +45,13 @@ class Main(Resource):
 
 
 api.add_resource(Main, '/')
+
+
+@app.route('/query')
+def query():
+    city = request.args.get('city')
+    main = Main()
+    return city
 
 
 if __name__ == '__main__':
