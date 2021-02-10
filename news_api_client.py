@@ -16,10 +16,17 @@ class NewsApiClient:
         else:
             self.news_data = response.json()
             print(self.news_data)
-            return True
+            return self.news_data
 
-    def get_top_news(self):
-        top_news = {
-            "top_news": self.news_data['articles'][0:5]
-        }
-        return top_news
+    def get_title(self):
+        top_three_news = self.news_data['articles'][0:3]
+        news = []
+        i = 0
+        for k in top_three_news:
+            i += 1
+            news.append('title' + str(i))
+            news.append(k['title'])
+            news.append('body' + str(i))
+            news.append(k['content'])
+        print(news)
+        return [news[i::3] for i in range(3)]
