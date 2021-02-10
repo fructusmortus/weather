@@ -19,24 +19,11 @@ class WeatherbitApiClient:
             print(self.weather_data)
             return True
 
-    def get_weather(self):
-        weather_descr = {
-            "weather_descr": self.weather_data['data'][0]['weather']['description']
-        }
-        return weather_descr
-
     def get_wind(self):
-        wind_info = {
-            "wind_speed": self.weather_data['data'][0]['wind_spd'],
-            "wind_dir": self.weather_data['data'][0]['wind_cdir_full']
-        }
-        return wind_info
+        return self.weather_data['data'][0]['wind_spd'], "km/h"
 
-    def get_main(self):
-        main_info = {
-            "temp": self.weather_data['data'][0]['temp'],
-            "feels_like": self.weather_data['data'][0]['app_temp'],
-            "pressure": self.weather_data['data'][0]['pres'],
-            "humidity": self.weather_data['data'][0]['rh']
-        }
-        return main_info
+    def get_weather_description(self):
+        return self.weather_data['data'][0]['weather']['description']
+
+    def get_temperature(self):
+        return self.weather_data['data'][0]['temp'], "celsius"
