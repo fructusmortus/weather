@@ -24,47 +24,35 @@ def main():
     country = request.args.get('country')
     if city and country:
         new_weather = WeatherApiClient(city)
-        news = NewsApiClient(country)
-        status_news = news.get_data()
         status_weather = new_weather.get_data()
-        if status_weather and status_news:
-            top_news = news.get_title()
+        if status_weather:
             wind_info = new_weather.get_wind()
             weather_info = new_weather.get_weather_description()
             temperature_info = new_weather.get_temperature()
-            data = {
-                "city": city,
-                "country": country,
-                "hot_news": top_news,
-                "local_weather": {"wind_info": wind_info,
-                                  "weather_info": weather_info,
-                                  "temperature_info": temperature_info
-                                  }
-                }
-            return jsonify(data)
         else:
             new_weather = WeatherbitApiClient(city)
-            news = NewsApiClient(country)
-            status_news = news.get_data()
             status_weather = new_weather.get_data()
-            if status_weather and status_news:
-                top_news_info = news.get_top_news()
+            if status_weather:
                 wind_info = new_weather.get_wind()
                 weather_info = new_weather.get_weather_description()
                 temperature_info = new_weather.get_temperature()
-                data = {
-                    "city": city,
-                    "country": country,
-                    "hot_news": top_news_info,
-                    "local_weather": {"wind_info": wind_info,
-                                      "weather_info": weather_info,
-                                      "temperature_info": temperature_info
-                                      }
-                    }
-                return jsonify(data)
             else:
                 return render_template('error.html')
-
+        news = NewsApiClient(country)
+        status_news = news.get_data()
+        top_news = "test"
+        if status_news:
+            top_news = news.get_top_news()
+        data = {
+            "city": city,
+            "country": country,
+            "hot_news": top_news,
+            "local_weather": {"wind_info": wind_info,
+                              "weather_info": weather_info,
+                              "temperature_info": temperature_info
+                              }
+        }
+        return jsonify(data)
 
 @app.route('/wind-info')
 def wind():

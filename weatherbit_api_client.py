@@ -8,11 +8,11 @@ class WeatherbitApiClient:
         self.config = conf.con_wb
         self.city = city
         self.weather_data = {}
-        # self.weather_data = requests.get(config['url'] + "current?access_key=" + config['api_key'] + "&query=" + city)
 
     def get_data(self):
         response = requests.get(f"{self.config['url']}?city={self.city}&key={self.config['api_key']}")
-        if 'data' not in response.json():
+        if response.status_code != 200:
+            print(response.status_code)
             return False
         else:
             self.weather_data = response.json()
