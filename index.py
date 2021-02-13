@@ -1,5 +1,5 @@
 from weather_api_client import WeatherApiClient
-# from open_weather_api_client import OpenWeatherApiClient
+from news_api_client import NewsApiClient
 from weatherbit_api_client import WeatherbitApiClient
 from flask import Flask
 from flask import request
@@ -20,37 +20,39 @@ def index():
 
 @app.route('/main', methods=['POST', 'GET'])
 def main():
-    # city = request.args.get('city')
-    body = request.get_json(silent=True)
-    # print(body)
-    city = body['city']
-    if city:
+    city = request.args.get('city')
+    country = request.args.get('country')
+    if city and country:
         new_weather = WeatherApiClient(city)
-        status = new_weather.get_data()
-        if status:
+        status_weather = new_weather.get_data()
+        if status_weather:
             wind_info = new_weather.get_wind()
-            moisture_info = new_weather.get_moisture()
-            main_weather_params = new_weather.get_main_weather_params()
-            data = {"moisture_info": moisture_info,
-                    "wind_info": wind_info,
-                    "main_weather_params": main_weather_params}
-            return jsonify(data)
+            weather_info = new_weather.get_weather_description()
+            temperature_info = new_weather.get_temperature()
         else:
-            # new_weather = OpenWeatherApiClient(city)
             new_weather = WeatherbitApiClient(city)
-            status = new_weather.get_data()
-            print("status", status)
-            if status:
-                weather_descr = new_weather.get_weather()
+            status_weather = new_weather.get_data()
+            if status_weather:
                 wind_info = new_weather.get_wind()
-                main_info = new_weather.get_main()
-                data = {"weather_descr": weather_descr,
-                        "wind_info": wind_info,
-                        "main_info": main_info}
-                return jsonify(data)
+                weather_info = new_weather.get_weather_description()
+                temperature_info = new_weather.get_temperature()
             else:
-                return render_template('error.html', city=city)
-
+                return render_template('error.html')
+        news = NewsApiClient(country)
+        status_news = news.get_data()
+        top_news = "test"
+        if status_news:
+            top_news = news.get_top_news()
+        data = {
+            "city": city,
+            "country": country,
+            "hot_news": top_news,
+            "local_weather": {"wind_info": wind_info,
+                              "weather_info": weather_info,
+                              "temperature_info": temperature_info
+                              }
+        }
+        return jsonify(data)
 
 @app.route('/wind-info')
 def wind():
@@ -73,8 +75,6 @@ def moisture():
         return render_template('moisture-info.html', moisture=moisture_info)
     else:
         return redirect("/", code=302)
-
-
 
 
 if __name__ == '__main__':
