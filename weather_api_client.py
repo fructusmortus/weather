@@ -1,18 +1,16 @@
 import requests
 import conf
+from ParentWeatherApi import ParentWeatherApi
 
 
-class WeatherApiClient:
+class WeatherApiClient(ParentWeatherApi):
 
     def __init__(self, city):
-        self.config = conf.con
-        self.city = city
-        self.weather_data = {}
+        super().__init__(city, config=conf.con)
 
     def get_data(self):
         response = requests.get(f"{self.config['url']}current?access_key={self.config['api_key']}&query={self.city}")
-        if response.status_code != 200:
-            print(response.status_code)
+        if 'success' in response.json():
             return False
         else:
             self.weather_data = response.json()

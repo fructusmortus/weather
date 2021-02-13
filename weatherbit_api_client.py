@@ -1,13 +1,12 @@
 import requests
 import conf
+from ParentWeatherApi import ParentWeatherApi
 
 
-class WeatherbitApiClient:
+class WeatherbitApiClient(ParentWeatherApi):
 
     def __init__(self, city):
-        self.config = conf.con_wb
-        self.city = city
-        self.weather_data = {}
+        super().__init__(city, config=conf.con_wb)
 
     def get_data(self):
         response = requests.get(f"{self.config['url']}?city={self.city}&key={self.config['api_key']}")
