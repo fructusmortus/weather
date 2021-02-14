@@ -14,3 +14,7 @@ con_top_news = {
     "api_key": "0ffe15ac03b847999aa821a7eb9044533",
     "url": "http://newsapi.org/v2/top-headlines"
 }
+
+con_lenta = {
+    "url": "https://lenta.ru/"
+}

@@ -1,6 +1,7 @@
 from weather_api_client import WeatherApiClient
 from news_api_client import NewsApiClient
 from weatherbit_api_client import WeatherbitApiClient
+from LentaParser import LentaParser
 from flask import Flask
 from flask import request
 from flask import render_template
@@ -40,9 +41,11 @@ def main():
                 return render_template('error.html')
         news = NewsApiClient(country)
         status_news = news.get_data()
-        top_news = "test"
         if status_news:
             top_news = news.get_top_news()
+        else:
+            news = LentaParser()
+            top_news = news.get_news()
         data = {
             "city": city,
             "country": country,
