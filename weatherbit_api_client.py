@@ -1,22 +1,29 @@
 import requests
 import conf
+from api_not_available import ApiNotAvailableException
 from ParentWeatherApi import ParentWeatherApi
 
 
-class WeatherbitApiClient(ParentWeatherApi):
+class WeatherbitApiClient():
+    BASE_URL = "{}?city={}&key={}"
 
     def __init__(self, city):
-        super().__init__(city, config=conf.con_wb)
+        self.weather_data = {}
+        self.city = city
+        self.send_request()
 
-    def get_data(self):
-        response = requests.get(f"{self.config['url']}?city={self.city}&key={self.config['api_key']}")
-        if response.status_code != 200:
-            print(response.status_code)
-            return False
-        else:
+    def send_request(self):
+        response = requests.get(self.BASE_URL.format(conf.con_wb['url'], self.city, conf.con_wb['api_key']))
+        try:
             self.weather_data = response.json()
-            print(self.weather_data)
-            return True
+            return self.weather_data
+        except ApiNotAvailableException:
+            if response.status_code != 200:
+                error_message = response.json()['error']
+                raise ApiNotAvailableException(f"{error_message} occurred in WeatherbitApiClient")
+
+    def get_weather_data(self):
+        return self.weather_data
 
     def get_wind(self):
         return self.weather_data['data'][0]['wind_spd'], "km/h"

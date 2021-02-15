@@ -25,14 +25,14 @@ def main():
     country = request.args.get('country')
     if city and country:
         new_weather = WeatherApiClient(city)
-        status_weather = new_weather.get_data()
+        status_weather = new_weather.get_weather_data()
         if status_weather:
             wind_info = new_weather.get_wind()
             weather_info = new_weather.get_weather_description()
             temperature_info = new_weather.get_temperature()
         else:
             new_weather = WeatherbitApiClient(city)
-            status_weather = new_weather.get_data()
+            status_weather = new_weather.get_weather_data()
             if status_weather:
                 wind_info = new_weather.get_wind()
                 weather_info = new_weather.get_weather_description()

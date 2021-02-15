@@ -1,0 +1,2 @@
+class ApiNotAvailableException(Exception):
+    pass

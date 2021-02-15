@@ -12,7 +12,6 @@ class LentaParser:
     def get_news(self):
         response = requests.get(f"{con_lenta['url']}").text
         soup = bs(response, 'lxml')
-        all_paragraphs = []
         for each in soup.select('div[class*="yellow-box__wrap"]'):
             children = each.findChildren(recursive=False)
             main_news = children[1:]
@@ -27,8 +26,10 @@ class LentaParser:
                 soup_article = bs(body, 'lxml')
                 for element in soup_article.select('div[itemprop*="articleBody"]'):
                     paragraph = element.find_all('p')
+                    all_paragraphs = ""
                     for p in paragraph:
-                        all_paragraphs = p.getText()
-                news_data['body'] = all_paragraphs
+                        p_text = p.getText()
+                        all_paragraphs = "".join(p_text)
+                    news_data['body'] = all_paragraphs
                 self.top_news.append(news_data)
         return self.top_news
