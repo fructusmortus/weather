@@ -1,4 +1,4 @@
-
+import psycopg2
 
 con = {
     "api_key": "ca6a19006afff952f0e5246316b1ff94",
@@ -18,3 +18,10 @@ con_top_news = {
 con_lenta = {
     "url": "https://lenta.ru/"
 }
+
+con_db = psycopg2.connect(
+    host="localhost",
+    database="GatherApiData",
+    user="postgres",
+    password="123QWEasd"
+)

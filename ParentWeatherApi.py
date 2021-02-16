@@ -11,3 +11,6 @@ class ParentWeatherApi(ABC):
     @abstractmethod
     def send_request(self):
         pass
+
+    def get_weather_data(self):
+        return self.weather_data

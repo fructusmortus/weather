@@ -20,9 +20,6 @@ class WeatherbitApiClient(ParentWeatherApi):
                 error_message = response.json()['error']
                 raise ApiNotAvailableException(f"{error_message} occurred in WeatherbitApiClient")
 
-    def get_weather_data(self):
-        return self.weather_data
-
     def get_wind(self):
         return self.weather_data['data'][0]['wind_spd'], "km/h"
 

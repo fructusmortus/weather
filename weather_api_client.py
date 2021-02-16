@@ -20,9 +20,6 @@ class WeatherApiClient(ParentWeatherApi):
             self.weather_data = response.json()
             return self.weather_data
 
-    def get_weather_data(self):
-        return self.weather_data
-
     def get_wind(self):
         return self.weather_data['current']['wind_speed'], "km/h"
 

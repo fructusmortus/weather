@@ -2,16 +2,19 @@ from weather_api_client import WeatherApiClient
 from news_api_client import NewsApiClient
 from weatherbit_api_client import WeatherbitApiClient
 from LentaParser import LentaParser
+from conf import con_db
 from flask import Flask
 from flask import request
 from flask import render_template
 from flask import redirect
-from flask_restful import Resource, Api
+from flask_restful import Api
 from flask import jsonify
 
 app = Flask(__name__)
 
 api = Api(app)
+
+cur = con_db.cursor()
 
 
 @app.route('/')
@@ -56,6 +59,7 @@ def main():
                               }
         }
         return jsonify(data)
+
 
 @app.route('/wind-info')
 def wind():
