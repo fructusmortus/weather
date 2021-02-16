@@ -26,10 +26,7 @@ class LentaParser:
                 soup_article = bs(body, 'lxml')
                 for element in soup_article.select('div[itemprop*="articleBody"]'):
                     paragraph = element.find_all('p')
-                    all_paragraphs = ""
-                    for p in paragraph:
-                        p_text = p.getText()
-                        all_paragraphs = "".join(p_text)
+                    all_paragraphs = (''.join(p.getText() for p in paragraph))
                     news_data['body'] = all_paragraphs
                 self.top_news.append(news_data)
         return self.top_news

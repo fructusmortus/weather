@@ -4,13 +4,11 @@ from ParentWeatherApi import ParentWeatherApi
 from api_not_available import ApiNotAvailableException
 
 
-class WeatherApiClient():
+class WeatherApiClient(ParentWeatherApi):
     BASE_URL = "{}current?access_key={}&query={}"
 
     def __init__(self, city):
-        self.weather_data = {}
-        self.city = city
-        self.send_request()
+        super().__init__(city)
 
     def send_request(self):
         response = requests.get(self.BASE_URL.format(conf.con['url'], conf.con['api_key'], self.city))
