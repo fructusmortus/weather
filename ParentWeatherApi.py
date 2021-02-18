@@ -10,7 +10,17 @@ class ParentWeatherApi(ABC):
 
     @abstractmethod
     def send_request(self):
-        pass
+        raise NotImplementedError
 
-    def get_weather_data(self):
-        return self.weather_data
+    @abstractmethod
+    def get_wind(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_weather_description(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_temperature(self):
+        raise NotImplementedError
+

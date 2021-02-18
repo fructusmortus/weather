@@ -2,24 +2,22 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 from conf import con_lenta
+from ParentNews import ParentNews
 
 
-class LentaParser:
+class LentaParser(ParentNews):
 
-    def __init__(self):
-        self.top_news = []
-
-    def get_news(self):
+    def send_request(self):
         response = requests.get(f"{con_lenta['url']}").text
         soup = bs(response, 'lxml')
         for each in soup.select('div[class*="yellow-box__wrap"]'):
             children = each.findChildren(recursive=False)
             main_news = children[1:]
             for news in main_news:
-                news_data = {}
+                news_output = {}
                 news_title = news.getText()
                 news_title = news_title.replace(u'\xa0', u' ')
-                news_data['title'] = news_title
+                news_output['title'] = news_title
                 news_href = con_lenta['url'] + news.find('a', href=True).get('href')
                 body = requests.get(news_href).text
                 time.sleep(1)
@@ -27,6 +25,6 @@ class LentaParser:
                 for element in soup_article.select('div[itemprop*="articleBody"]'):
                     paragraph = element.find_all('p')
                     all_paragraphs = (''.join(p.getText() for p in paragraph))
-                    news_data['body'] = all_paragraphs
-                self.top_news.append(news_data)
-        return self.top_news
+                    news_output['body'] = all_paragraphs
+                self.news_data.append(news_output)
+        return self.news_data

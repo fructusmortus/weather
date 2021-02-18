@@ -1,31 +1,30 @@
 import requests
-import conf
+from conf import con_api_news
+from api_not_available import ApiNotAvailableException
+from ParentNews import ParentNews
+from pprint import pprint
 
 
-class NewsApiClient:
+class NewsApiClient(ParentNews):
 
     def __init__(self, country):
-        self.config = conf.con_top_news
         self.country = country
-        self.news_data = {}
+        super().__init__()
 
-    def get_data(self):
-        response = requests.get(f"{self.config['url']}?country={self.country}&apiKey={self.config['api_key']}")
+    def send_request(self):
+        response = requests.get(f"{con_api_news['url']}?country={self.country}&apiKey={con_api_news['api_key']}")
         if response.status_code != 200:
-            print(response.status_code)
-            return False
+            error_message = response.json()['error']
+            raise ApiNotAvailableException(f"{error_message} occurred in NewsApiClient")
         else:
-            self.news_data = response.json()
-            print(self.news_data)
+            news_data = response.json()
+            news_data = news_data['articles'][0:]
+            pprint(news_data)
+            for news in news_data:
+                formatted_news = {
+                    "title": news['title'],
+                    "body": news['content']
+                }
+                self.news_data.append(formatted_news)
+                pprint(self.news_data)
             return self.news_data
-
-    def get_top_news(self):
-        top_three_news = self.news_data['articles'][0:3]
-        our_three = []
-        for news in top_three_news:
-            formatted_news = {
-                "title": news['title'],
-                "body": news['content']
-            }
-            our_three.append(formatted_news)
-        return our_three
