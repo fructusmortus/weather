@@ -5,8 +5,8 @@ class ParentNews(ABC):
 
     def __init__(self):
         self.news_data = []
-        self.send_request()
+        self.__send_request()
 
     @abstractmethod
-    def send_request(self):
+    def __send_request(self):
         raise NotImplementedError

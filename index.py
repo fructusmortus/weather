@@ -26,9 +26,11 @@ def main():
     if city and country:
         try:
             new_weather = WeatherApiClient(city)
-            news = NewsApiClient(country)
         except ApiNotAvailableException:
             new_weather = WeatherbitApiClient(city)
+        try:
+            news = NewsApiClient(country)
+        except ApiNotAvailableException:
             news = LentaParser()
         wind_info = new_weather.get_wind()
         weather_info = new_weather.get_weather_description()
@@ -36,7 +38,7 @@ def main():
         data = {
             "city": city,
             "country": country,
-            "hot_news": news.news_data,
+            "hot_news": news.get_top_news(),
             "local_weather": {"wind_info": wind_info,
                               "weather_info": weather_info,
                               "temperature_info": temperature_info

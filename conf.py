@@ -18,10 +18,3 @@ con_api_news = {
 con_lenta = {
     "url": "https://lenta.ru/"
 }
-
-con_db = psycopg2.connect(
-    host="localhost",
-    database="GatherApiData",
-    user="postgres",
-    password="123QWEasd"
-)
