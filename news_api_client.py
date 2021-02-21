@@ -20,7 +20,7 @@ class NewsApiClient(ParentNews):
 
     def get_top_news(self):
         output_news = []
-        for news in self.news_data['articles'][0:]:
+        for news in self.news_data['articles'][0:3]:
             formatted_news = {
                 "title": news['title'],
                 "body": news['content']

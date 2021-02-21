@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 Base = declarative_base()
-engine = create_engine("postgresql://postgres:123QWEasd@localhost:5432/apidata")
+engine = create_engine("postgresql://postgres:123QWEasd@localhost:5432/api_data_test")
 
 
 class Country(Base):
