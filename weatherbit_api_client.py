@@ -7,7 +7,7 @@ from ParentWeatherApi import ParentWeatherApi
 class WeatherbitApiClient(ParentWeatherApi):
     BASE_URL = "{}?city={}&key={}"
 
-    def __send_request(self):
+    def _send_request(self):
         response = requests.get(self.BASE_URL.format(con_wb['url'], self.city, con_wb['api_key']))
         if response.status_code != 200:
             error_message = response.json()['error']

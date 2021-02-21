@@ -10,7 +10,7 @@ class NewsApiClient(ParentNews):
         self.country = country
         super().__init__()
 
-    def __send_request(self):
+    def _send_request(self):
         response = requests.get(f"{con_api_news['url']}?country={self.country}&apiKey={con_api_news['api_key']}")
         if response.status_code != 200:
             error_message = response.json()['message']

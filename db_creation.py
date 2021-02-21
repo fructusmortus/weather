@@ -1,56 +1,48 @@
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-import psycopg2
+from sqlalchemy import create_engine, func, Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
-import pgconnection
-
-
-def main():
-    queries = ({"Description": "Create database",
-                "Database": "postgres",
-                "SQL": """CREATE DATABASE apidata"""},
-
-               {"Description": "Create city table ",
-                "Database": "apidata",
-                "SQL": """CREATE TABLE city(cityid serial PRIMARY KEY, name varchar(256) NOT NULL)"""},
-
-               {"Description": "Create weather table ",
-                "Database": "apidata",
-                "SQL": """CREATE TABLE weather(weatherid serial PRIMARY KEY, 
-                                       cityid smallint REFERENCES city(cityid) NOT NULL, 
-                                       weather_info varchar(256) NOT NULL, 
-                                       temp_in_celsius DECIMAL(3,1) NOT NULL, 
-                                       wind_speed_kmph smallint NOT NULL, dateadded date)"""},
-
-                {"Description": "Create country table ",
-                 "Database": "apidata",
-                 "SQL": """CREATE TABLE country(countryid serial PRIMARY KEY, name varchar(256) NOT NULL)"""},
-
-                {"Description": "Create news table ",
-                 "Database": "apidata",
-                 "SQL": """CREATE TABLE news(newsid serial PRIMARY KEY, 
-                                                       countryid smallint REFERENCES country(countryid) NOT NULL, 
-                                                       title varchar(1024) NOT NULL, 
-                                                       body text NOT NULL, 
-                                                       dateadded date)"""})
-
-    try:
-
-        for query in queries:
-            conn = pgconnection.get_connection(query["Database"])
-            print(conn)
-            conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-            cursor = conn.cursor()
-
-            cursor.execute(query["SQL"])
-
-            print("Executed {}".format(query["Description"]))
-
-            cursor.close()
-            conn.close()
-
-    except psycopg2.ProgrammingError as e:
-
-        print(e)
+Base = declarative_base()
+engine = create_engine("postgresql://postgres:123QWEasd@localhost:5432/apidata")
 
 
-main()
+class Country(Base):
+    __tablename__ = "country"
+
+    id = Column('id', Integer, primary_key=True)
+    name = Column('name', String, unique=True)
+    news = relationship("News", uselist=False, back_populates="country")
+
+
+class News(Base):
+    __tablename__ = "news"
+
+    id = Column('id', Integer, primary_key=True)
+    country_id = Column(Integer, ForeignKey('country.id'))
+    country = relationship("Country", back_populates="news")
+    title = Column('title', String)
+    body = Column('body', String)
+    date = Column('dateadded', DateTime, onupdate=func.now())
+
+
+class City(Base):
+    __tablename__ = "city"
+
+    id = Column('id', Integer, primary_key=True)
+    name = Column('name', String, unique=True)
+    weather = relationship("Weather", uselist=False, back_populates="city")
+
+
+class Weather(Base):
+    __tablename__ = "weather"
+
+    id = Column('id', Integer, primary_key=True)
+    city_id = Column(Integer, ForeignKey('city.id'))
+    city = relationship("City", back_populates="weather")
+    weather_info = Column('weather_info', String)
+    temp_in_c = Column('temp_in_c', Integer)
+    wind_speed_kmph = Column('wind_speed_kmph', Integer)
+    date = Column('dateadded', DateTime, onupdate=func.now())
+
+
+Base.metadata.create_all(bind=engine)

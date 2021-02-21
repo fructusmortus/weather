@@ -8,7 +8,7 @@ from api_not_available import ApiNotAvailableException
 
 class LentaParser(ParentNews):
 
-    def __send_request(self):
+    def _send_request(self):
         response = requests.get(f"{con_lenta['url']}")
         if response.status_code != 200:
             raise ApiNotAvailableException("Error occurred in LentaParser")

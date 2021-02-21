@@ -7,7 +7,7 @@ from api_not_available import ApiNotAvailableException
 class WeatherApiClient(ParentWeatherApi):
     BASE_URL = "{}current?access_key={}&query={}"
 
-    def __send_request(self):
+    def _send_request(self):
         response = requests.get(self.BASE_URL.format(con['url'], con['api_key'], self.city))
         if 'success' in response.json():
             error_message = response.json()['error']['info']

@@ -1,23 +1,33 @@
+from weather_api_client import WeatherApiClient
+from news_api_client import NewsApiClient
+from weatherbit_api_client import WeatherbitApiClient
+from LentaParser import LentaParser
+from api_not_available import ApiNotAvailableException
 import datetime
-import requests
+from flask import request
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import sqlalchemy
 import pgconnection
+import pycountry
+
 
 
 class InsertData:
 
-    BASE_URL = "http://127.0.0.1:5000/main?city=Ottawa&country=ca"
-
     def __init__(self):
-        self.data_response = {}
-        self.send_request()
+        self.gathered_apis_data = {}
 
-    def send_request(self):
-        response = requests.get(InsertData.BASE_URL)
-        self.data_response = response.json()
-        return self.data_response
+    def gather_data_news_api(self):
+        countries = (country.alpha_2 for country in list(pycountry.countries))
+        for country in countries:
+            try:
+                news = NewsApiClient(country)
+            except ApiNotAvailableException:
+                news = LentaParser()
+
+    def gather_apis_data(self):
+        return self.gathered_apis_data
 
     def insert_data(self):
         try:

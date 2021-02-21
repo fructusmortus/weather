@@ -11,7 +11,7 @@ con_wb = {
 }
 
 con_api_news = {
-    "api_key": "0ffe15ac03b847999aa821a7eb9044533",
+    "api_key": "0ffe15ac03b847999aa821a7eb904453",
     "url": "http://newsapi.org/v2/top-headlines"
 }
 
