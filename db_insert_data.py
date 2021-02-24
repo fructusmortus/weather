@@ -10,6 +10,7 @@ import json
 import time
 import pycountry
 
+
 with open('country-capitals.json') as capitals:
     data_capitals = json.load(capitals)
     formatted_capitals = [cap['CapitalName'] for cap in data_capitals if cap['CapitalName'] != "N/A"]
@@ -19,13 +20,18 @@ class InsertData:
 
     @staticmethod
     def insert_data_news_api():
-        engine = create_engine("postgresql://postgres:123QWEasd@localhost:5432/api_data_test")
+        engine = create_engine("postgresql://postgres:123QWEasd@localhost:5432/api_data_test_2")
         session_maker = sessionmaker(bind=engine)
         session = session_maker()
-        countries = [country.alpha_2 for country in list(pycountry.countries)]
+        main_countries = []
+        for country in list(pycountry.countries):
+            if country.alpha_2 in ['US', 'CA', 'GB', 'DE', 'JP', 'CN', 'ES', 'GR', 'FR', 'IT']:
+                main_countries.append(country)
+        main_countries = [country.alpha_2 for country in main_countries]
+        # countries = [country.alpha_2 for country in list(pycountry.countries)]
         identifier_c = 0
         identifier_n = 0
-        for c in countries[0:10]:
+        for c in main_countries[0:4]:
             identifier_c += 1
             country = Country()
             country.id = identifier_c
@@ -37,14 +43,14 @@ class InsertData:
             except ApiNotAvailableException:
                 whole_news = LentaParser()
             top_news = whole_news.get_top_news()
-            identifier_n += 2
-            news = News()
-            news.id = identifier_n
-            news.country_id = country.id
             for content in top_news:
+                identifier_n += 2
+                news = News()
+                news.id = identifier_n
+                news.country_id = country.id
                 news.title = content['title']
                 news.body = content['body']
-            session.add(news)
+                session.add(news)
         session.commit()
         session.close()
 

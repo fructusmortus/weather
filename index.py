@@ -4,26 +4,30 @@ from weatherbit_api_client import WeatherbitApiClient
 from LentaParser import LentaParser
 from flask import Flask
 from flask import request
-from flask import render_template
+from GetValidator import RunRequestSchema
 from flask_restful import Api
 from flask import jsonify
 from api_not_available import ApiNotAvailableException
+from allcities import cities
+import pycountry
 
 app = Flask(__name__)
 
 api = Api(app)
 
-
-@app.route('/')
-def index():
-    return render_template('form.html')
+run_request_schema = RunRequestSchema()
 
 
-@app.route('/main', methods=['POST', 'GET'])
-def main():
+@app.route('/current_data', methods=['GET'])
+def current_data():
+    errors = run_request_schema.validate(request.args)
+    if errors:
+        raise ValueError(("An error occurred with input: {}".format(errors)))
     city = request.args.get('city')
-    country = request.args.get('country')
-    if city and country:
+    filtered_city_set = cities.filter(name=city, population='>100000')
+    largest_city = next(iter(filtered_city_set))
+    if largest_city.dict['country_code'] in [country.alpha_2 for country in list(pycountry.countries)]:
+        country = largest_city.dict['country_code']
         try:
             new_weather = WeatherApiClient(city)
         except ApiNotAvailableException:

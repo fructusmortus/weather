@@ -10,6 +10,9 @@ class WeatherbitApiClient(ParentWeatherApi):
     def _send_request(self):
         response = requests.get(self.BASE_URL.format(con_wb['url'], self.city, con_wb['api_key']))
         if response.status_code != 200:
+            print(self.city)
+            print(response.text)
+            print(response.status_code)
             error_message = response.json()['error']
             raise ApiNotAvailableException(f"{error_message} occurred in WeatherbitApiClient")
         else:
