@@ -1,3 +1,4 @@
+from conf import postgres_con
 from weather_api_client import WeatherApiClient
 from news_api_client import NewsApiClient
 from weatherbit_api_client import WeatherbitApiClient
@@ -6,79 +7,126 @@ from api_not_available import ApiNotAvailableException
 from db_creation import Country, City, News, Weather
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import json
 import time
-import pycountry
-
-
-with open('country-capitals.json') as capitals:
-    data_capitals = json.load(capitals)
-    formatted_capitals = [cap['CapitalName'] for cap in data_capitals if cap['CapitalName'] != "N/A"]
 
 
 class InsertData:
+    engine = create_engine(postgres_con['c_str'])
 
     @staticmethod
-    def insert_data_news_api():
-        engine = create_engine("postgresql://postgres:123QWEasd@localhost:5432/api_data_test_2")
-        session_maker = sessionmaker(bind=engine)
-        session = session_maker()
-        main_countries = []
-        for country in list(pycountry.countries):
-            if country.alpha_2 in ['US', 'CA', 'GB', 'DE', 'JP', 'CN', 'ES', 'GR', 'FR', 'IT']:
-                main_countries.append(country)
-        main_countries = [country.alpha_2 for country in main_countries]
-        # countries = [country.alpha_2 for country in list(pycountry.countries)]
-        identifier_c = 0
-        identifier_n = 0
-        for c in main_countries[0:4]:
-            identifier_c += 1
-            country = Country()
-            country.id = identifier_c
-            country.name = c
-            session.add(country)
-            time.sleep(1)
-            try:
-                whole_news = NewsApiClient(c)
-            except ApiNotAvailableException:
-                whole_news = LentaParser()
-            top_news = whole_news.get_top_news()
-            for content in top_news:
-                identifier_n += 2
-                news = News()
-                news.id = identifier_n
-                news.country_id = country.id
-                news.title = content['title']
-                news.body = content['body']
-                session.add(news)
-        session.commit()
+    def check_country_id(country_name):
+        session = sessionmaker(bind=InsertData.engine)()
+        country_object = session.query(Country).filter(Country.name == country_name).first()
         session.close()
+        if country_object:
+            return country_object.id
+        return None
 
     @staticmethod
-    def insert_data_weather_api():
-        engine = create_engine("postgresql://postgres:123QWEasd@localhost:5432/api_data_test")
-        session_maker = sessionmaker(bind=engine)
-        session = session_maker()
-        identifier_c = 0
-        identifier_n = 0
-        for c in formatted_capitals[0:10]:
-            identifier_c += 1
-            city = City()
-            city.id = identifier_c
-            city.name = c
-            session.add(city)
-            time.sleep(1)
-            try:
-                new_weather = WeatherApiClient(c)
-            except ApiNotAvailableException:
-                new_weather = WeatherbitApiClient(c)
-            identifier_n += 2
-            weather = Weather()
-            weather.id = identifier_n
-            weather.city_id = city.id
-            weather.weather_info = new_weather.get_weather_description()
-            weather.temp_in_c = new_weather.get_temperature()[0]
-            weather.wind_speed_kmph = new_weather.get_wind()[0]
-            session.add(weather)
+    def check_news(country_id):
+        session = sessionmaker(bind=InsertData.engine)()
+        actual_news = []
+        for instance in session.query(News).filter(News.country_id == country_id).order_by(News.date.desc()).limit(3):
+            actual_news.append({'title': instance.title, 'body': instance.body})
+        session.close()
+        return actual_news
+
+    @staticmethod
+    def insert_country(country_name):
+        session = sessionmaker(bind=InsertData.engine)()
+        country = Country()
+        country.name = country_name
+        session.add(country)
+        session.flush()
+        country_id = country.id
         session.commit()
         session.close()
+        return country_id
+
+    @staticmethod
+    def insert_data_news_api(country, country_id):
+        session = sessionmaker(bind=InsertData.engine)()
+        try:
+            whole_news = NewsApiClient(country)
+        except ApiNotAvailableException:
+            time.sleep(1)
+            whole_news = LentaParser()
+        top_news = whole_news.get_top_news()
+        actual_news = []
+        for content in top_news:
+            news = News()
+            news.country_id = country_id
+            news.title = content['title']
+            news.body = content['body']
+            actual_news.append({'title': news.title, 'body': news.body})
+            session.add(news)
+        session.commit()
+        session.close()
+        return actual_news
+
+    @staticmethod
+    def check_city_id(city_name):
+        session = sessionmaker(bind=InsertData.engine)()
+        city_object = session.query(City).filter(City.name == city_name).first()
+        session.close()
+        if city_object:
+            return city_object.id
+        return None
+
+    @staticmethod
+    def check_weather(city_id):
+        session = sessionmaker(bind=InsertData.engine)()
+        actual_weather = []
+        for instance in session.query(Weather).filter(Weather.city_id == city_id)\
+                                              .order_by(Weather.date.desc())\
+                                              .limit(1):
+            actual_weather.append({
+               'temperature_info': [instance.temp_in_c, 'celsius'],
+               'weather_info': instance.weather_info,
+               'wind_info': [instance.wind_speed_kmph, 'km/h']
+            })
+        session.close()
+        return actual_weather
+
+    @staticmethod
+    def insert_city(city_name):
+        session = sessionmaker(bind=InsertData.engine)()
+        city = City()
+        city.name = city_name
+        session.add(city)
+        session.flush()
+        city_id = city.id
+        session.commit()
+        session.close()
+        return city_id
+
+    @staticmethod
+    def insert_data_weather_api(city, city_id):
+        session = sessionmaker(bind=InsertData.engine)()
+        try:
+            new_weather = WeatherApiClient(city)
+        except ApiNotAvailableException:
+            new_weather = WeatherbitApiClient(city)
+        weather = Weather()
+        weather.city_id = city_id
+        weather.weather_info = new_weather.get_weather_description()
+        weather.temp_in_c = new_weather.get_temperature()[0]
+        weather.wind_speed_kmph = new_weather.get_wind()[0]
+        session.add(weather)
+        actual_weather = {
+            "wind_info": [weather.wind_speed_kmph, 'km/h'],
+            "weather_info": weather.weather_info,
+            "temperature_info": [weather.temp_in_c, "celsius"]
+        }
+        session.commit()
+        session.close()
+        return actual_weather
+
+    @staticmethod
+    def get_cities():
+        actual_city = []
+        session = sessionmaker(bind=InsertData.engine)()
+        city_objects = session.query.with_entities(City.name).distinct()
+        for city in city_objects:
+            actual_city.append(city)
+        return actual_city

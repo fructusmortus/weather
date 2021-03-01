@@ -1,4 +1,3 @@
-import psycopg2
 
 con = {
     "api_key": "ca6a19006afff952f0e5246316b1ff944",
@@ -17,4 +16,8 @@ con_api_news = {
 
 con_lenta = {
     "url": "https://lenta.ru/"
+}
+
+postgres_con = {
+    "c_str": "postgresql://postgres:123QWEasd@localhost:5432/api_data_test_2"
 }
