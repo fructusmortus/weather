@@ -22,6 +22,7 @@ def current_data():
     city_id = InsertData.check_city_id(city)
     if not country_id and not city_id:
         country_id = InsertData.insert_country(country)
+        print(country_id)
         city_id = InsertData.insert_city(city)
         actual_weather = InsertData.insert_data_weather_api(city, city_id)
         actual_news = InsertData.insert_data_news_api(country, country_id)

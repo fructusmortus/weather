@@ -1,0 +1,1 @@
+C:\Users\Admin\anaconda3\python.exe "f:/HDD2/projects_py/get_weather/cache_data_job.py"

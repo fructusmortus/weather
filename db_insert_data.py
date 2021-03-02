@@ -62,7 +62,10 @@ class InsertData:
             session.add(news)
         session.commit()
         session.close()
-        return actual_news
+        if actual_news:
+            return actual_news
+        raise RuntimeError('Error during the data processing')
+
 
     @staticmethod
     def check_city_id(city_name):
@@ -120,13 +123,15 @@ class InsertData:
         }
         session.commit()
         session.close()
-        return actual_weather
+        if actual_weather:
+            return actual_weather
+        raise RuntimeError('Error during the data processing')
 
     @staticmethod
     def get_cities():
         actual_city = []
         session = sessionmaker(bind=InsertData.engine)()
-        city_objects = session.query.with_entities(City.name).distinct()
+        city_objects = session.query(City).order_by(City.name).distinct()
         for city in city_objects:
-            actual_city.append(city)
+            actual_city.append(city.name)
         return actual_city
